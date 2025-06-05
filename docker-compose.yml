@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    container_name: marketplace-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: marketplace
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - marketplace-net
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: marketplace-backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: pass
+      DB_NAME: marketplace
+      DATABASE_URL: postgres://user:pass@db:5432/marketplace
+      JWT_SECRET: supersegreto123
+    networks:
+      - marketplace-net
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: marketplace-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - marketplace-net
+    restart: unless-stopped
+
+networks:
+  marketplace-net:
+    driver: bridge
