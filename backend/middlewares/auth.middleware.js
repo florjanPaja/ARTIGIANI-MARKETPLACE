@@ -23,3 +23,13 @@ exports.onlyAdmin = (req, res, next) => {
   }
   next();
 };
+exports.isSelfOrAdmin = (req, res, next) => {
+  const loggedUserId = req.user?.id;
+  const targetId = parseInt(req.params.id, 10);
+
+  if (req.user?.ruolo === 'admin' || loggedUserId === targetId) {
+    return next();
+  }
+
+  return res.status(403).json({ message: 'Accesso negato' });
+};
