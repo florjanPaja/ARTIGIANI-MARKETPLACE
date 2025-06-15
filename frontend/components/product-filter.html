@@ -1,0 +1,80 @@
+<!-- frontend/components/product-filter.html -->
+<div class="card mb-4">
+    <div class="card-body">
+      <form id="product-filter-form" class="row g-3">
+        <div class="col-md-4">
+          <label for="filter-category" class="form-label">Categoria</label>
+          <select id="filter-category" class="form-select" name="category">
+            <option value="">Tutte</option>
+            <!-- Opzioni generate via JS -->
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="filter-min-price" class="form-label">Prezzo min (€)</label>
+          <input type="number" class="form-control" id="filter-min-price" name="minPrice" placeholder="0" min="0" step="0.01"/>
+        </div>
+        <div class="col-md-4">
+          <label for="filter-max-price" class="form-label">Prezzo max (€)</label>
+          <input type="number" class="form-control" id="filter-max-price" name="maxPrice" placeholder="1000" min="0" step="0.01"/>
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="filter-available" name="available"/>
+            <label class="form-check-label" for="filter-available">Disponibile solo</label>
+          </div>
+        </div>
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-primary">Applica Filtri</button>
+          <button type="reset" class="btn btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    /**
+     * Inizializza il filtro prodotti:
+     * - Ricarica categorie dal server se necessario
+     * - Dispone l'evento submit per filtrare e rigenerare la griglia dei prodotti
+     * @param {Function} onFilter callback che riceve un oggetto filters {category, minPrice, maxPrice, available}
+     */
+    function initProductFilter(onFilter) {
+      const $form = $('#product-filter-form');
+  
+      // Carica categorie da API
+      $.ajax({
+        url: '/api/products/categories',
+        method: 'GET',
+        success: cats => {
+          const $cat = $('#filter-category');
+          cats.forEach(c => $cat.append(`<option value="${c}">${c}</option>`));
+        }
+      });
+  
+      $form.on('submit', function(e) {
+        e.preventDefault();
+        const f = {
+          category: $('#filter-category').val(),
+          minPrice: parseFloat($('#filter-min-price').val()) || 0,
+          maxPrice: parseFloat($('#filter-max-price').val()) || Infinity,
+          available: $('#filter-available').is(':checked')
+        };
+        onFilter(f);
+      });
+  
+      $form.on('reset', function() {
+        setTimeout(() => onFilter({
+          category: '',
+          minPrice: 0,
+          maxPrice: Infinity,
+          available: false
+        }), 0);
+      });
+    }
+  
+    // Trigger su loadProductFilter per chi usa il pattern modulare
+    $(document).on('loadProductFilter', function(e, callback) {
+      initProductFilter(callback);
+    });
+  </script>
+  

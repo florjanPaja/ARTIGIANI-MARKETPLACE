@@ -1,0 +1,46 @@
+<!-- frontend/components/product-card.html -->
+<div class="col-md-4 mb-4">
+    <div class="card h-100">
+      <img src="{{imageUrl}}" class="card-img-top" alt="{{name}}">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">{{name}}</h5>
+        <p class="card-text">€{{price}}</p>
+        <div class="mt-auto">
+          <button class="btn btn-primary btn-sm view-btn" data-id="{{id}}">Dettagli</button>
+          <button class="btn btn-success btn-sm add-btn" data-id="{{id}}">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    /**
+     * Attiva gli eventi sui pulsanti della card
+     * @param {jQuery} $el L'elemento contenente la card da inizializzare
+     */
+    function initProductCard($el) {
+      $el.find('.view-btn').on('click', function() {
+        const id = $(this).data('id');
+        window.location.href = `/pages/prodotto.html?id=${id}`;
+      });
+      $el.find('.add-btn').on('click', function() {
+        const id = $(this).data('id');
+        const token = sessionStorage.getItem('authToken');
+        $.ajax({
+          url: '/api/cart',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ productId: id, quantity: 1 }),
+          headers: token ? { Authorization: 'Bearer ' + token } : {},
+          success: () => alert('Prodotto aggiunto al carrello!'),
+          error: xhr => alert(xhr.responseJSON?.message || 'Errore nell’aggiunta al carrello.')
+        });
+      });
+    }
+  
+    // Se incluso via .load(), all'evento `loadProductCard` viene inizializzata
+    $(document).on('loadProductCard', function(e, $el) {
+      initProductCard($el);
+    });
+  </script>
+  

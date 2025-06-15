@@ -1,0 +1,124 @@
+<!-- frontend/pages/prodotto.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prodotto – Artigianato Online</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body class="bg-light">
+
+  <div class="container my-5">
+    <h1 id="page-title" class="mb-4">Nuovo Prodotto</h1>
+    <div id="prod-alert" class="alert alert-danger d-none"></div>
+
+    <form id="prod-form">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nome Prodotto</label>
+        <input type="text" class="form-control" id="name" name="name" required />
+        <div class="invalid-feedback">Inserisci il nome del prodotto.</div>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Prezzo (€)</label>
+        <input type="number" class="form-control" id="price" name="price" required min="0.01" step="0.01" />
+        <div class="invalid-feedback">Inserisci un prezzo valido.</div>
+      </div>
+      <div class="mb-3">
+        <label for="available" class="form-label">Disponibile</label>
+        <select class="form-select" id="available" name="available">
+          <option value="true">Sì</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="imageUrl" class="form-label">URL Immagine</label>
+        <input type="url" class="form-control" id="imageUrl" name="imageUrl" />
+        <div class="invalid-feedback">Inserisci un URL valido.</div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submit-btn">Salva</button>
+      <button id="delete-btn" type="button" class="btn btn-danger ms-2 d-none">Elimina</button>
+    </form>
+  </div>
+
+  <!-- Bootstrap & jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
+  <script>
+    $(function() {
+      const token = sessionStorage.getItem('authToken');
+      if (!token) return window.location.href = '/login.html';
+
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const isEdit = params.get('edit') === 'true';
+      const $title = $('#page-title');
+      const $btnDelete = $('#delete-btn');
+      const $form = $('#prod-form')[0];
+      const $alert = $('#prod-alert');
+
+      if (isEdit && id) {
+        $title.text('Modifica Prodotto');
+        $btnDelete.removeClass('d-none');
+        $('#submit-btn').text('Aggiorna');
+        // Carica dati
+        $.ajax({
+          url: `/api/seller/products/${id}`,
+          headers: { Authorization: 'Bearer ' + token },
+          success: function(p) {
+            $('#name').val(p.name);
+            $('#price').val(p.price);
+            $('#available').val(p.available.toString());
+            $('#imageUrl').val(p.imageUrl);
+          },
+          error: xhr => $alert.text(xhr.responseJSON?.message || 'Errore caricamento prodotto.').removeClass('d-none')
+        });
+      }
+
+      $('#prod-form').on('submit', function(e) {
+        e.preventDefault();
+        $form.classList.add('was-validated');
+        if (!$form.checkValidity()) return;
+
+        const payload = {
+          name: $('#name').val(),
+          price: parseFloat($('#price').val()),
+          available: $('#available').val() === 'true',
+          imageUrl: $('#imageUrl').val()
+        };
+        const method = isEdit && id ? 'PUT' : 'POST';
+        const url = isEdit && id ? `/api/seller/products/${id}` : '/api/seller/products';
+
+        $.ajax({
+          url,
+          method,
+          contentType: 'application/json',
+          data: JSON.stringify(payload),
+          headers: { Authorization: 'Bearer ' + token },
+          success: function(res) {
+            window.location.href = '/dashboard.html';
+          },
+          error: xhr => $alert.text(xhr.responseJSON?.message || 'Operazione fallita.').removeClass('d-none')
+        });
+      });
+
+      $btnDelete.on('click', function() {
+        if (!confirm('Confermi eliminazione prodotto?')) return;
+        $.ajax({
+          url: `/api/seller/products/${id}`,
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + token },
+          success: () => window.location.href = '/dashboard.html',
+          error: xhr => $alert.text(xhr.responseJSON?.message || 'Eliminazione fallita.').removeClass('d-none')
+        });
+      });
+    });
+  </script>
+</body>
+</html>

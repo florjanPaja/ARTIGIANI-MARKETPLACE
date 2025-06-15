@@ -1,0 +1,127 @@
+<!-- frontend/pages/admin.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel – Artigianato Online</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body class="bg-light">
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-2 d-none d-md-block bg-white border-end vh-100">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Utenti</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Prodotti</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Ordini</a></li>
+            <li class="nav-item"><a id="logout-btn" class="nav-link text-danger" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-10 ms-sm-auto px-4 py-4">
+        <h1 class="h2 mb-4">Area Amministratore</h1>
+        <div id="admin-alert" class="alert alert-danger d-none"></div>
+        <section id="user-management">
+          <h3>Gestione utenti</h3>
+          <div class="table-responsive">
+            <table id="users-table" class="table table-striped">
+              <thead>
+                <tr><th>ID</th><th>Email</th><th>Nome</th><th>Ruolo</th><th>Azioni</th></tr>
+              </thead>
+              <tbody>
+                <!-- Dati caricati via AJAX -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap & jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
+  <!-- Script pagina admin -->
+  <script>
+    $(document).ready(function() {
+      const token = sessionStorage.getItem('authToken');
+      if (!token) return window.location.href = '/login.html';
+
+      function showError(msg) {
+        $('#admin-alert').text(msg).removeClass('d-none');
+      }
+
+      // Logout
+      $('#logout-btn').on('click', function(e){
+        e.preventDefault();
+        sessionStorage.removeItem('authToken');
+        window.location.href = '/login.html';
+      });
+
+      // Carica utenti
+      $.ajax({
+        url: '/api/admin/users',
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(users) {
+          const tbody = $('#users-table tbody').empty();
+          users.forEach(u => {
+            tbody.append(`
+              <tr>
+                <td>${u.id}</td>
+                <td>${u.email}</td>
+                <td>${u.name}</td>
+                <td>${u.role}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning promote-btn" data-id="${u.id}">Promuovi</button>
+                  <button class="btn btn-sm btn-danger delete-btn" data-id="${u.id}">Elimina</button>
+                </td>
+              </tr>
+            `);
+          });
+        },
+        error: function(xhr) {
+          showError(xhr.responseJSON?.message || 'Errore durante il caricamento utenti.');
+        }
+      });
+
+      // Event delegation per pulsanti
+      $('#users-table').on('click', '.promote-btn', function() {
+        const id = $(this).data('id');
+        $.ajax({
+          url: `/api/admin/users/${id}/promote`,
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: () => location.reload(),
+          error: xhr => showError(xhr.responseJSON?.message || 'Promozione fallita.')
+        });
+      });
+
+      $('#users-table').on('click', '.delete-btn', function() {
+        const id = $(this).data('id');
+        if (!confirm('Confermi eliminazione utente?')) return;
+        $.ajax({
+          url: `/api/admin/users/${id}`,
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token },
+          success: () => location.reload(),
+          error: xhr => showError(xhr.responseJSON?.message || 'Eliminazione fallita.')
+        });
+      });
+    });
+  </script>
+</body>
+</html>
