@@ -2,8 +2,13 @@ const carrelloModel = require('../models/carrello.model');
 
 // Recupera il carrello di un utente
 exports.getCarrello = async (req, res) => {
-  const carrello = await carrelloModel.getCarrello(req.params.id_utente);
-  res.json(carrello);
+  try {
+    const carrello = await carrelloModel.getCarrello(req.params.id_utente);
+    res.json(carrello);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Errore durante il recupero del carrello' });
+  }
 };
 
 // Aggiunge o aggiorna articolo nel carrello
@@ -16,7 +21,7 @@ exports.aggiungiArticolo = async (req, res) => {
     res.status(201).json(riga);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Errore durante l\'aggiunta al carrello' });
+    res.status(400).json({ message: err.message || 'Errore durante l\'aggiunta al carrello' });
   }
 };
 
@@ -31,5 +36,18 @@ exports.rimuoviArticolo = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Errore durante la rimozione dal carrello' });
+  }
+};
+
+// ✅ Svuota tutto il carrello dell'utente
+exports.svuotaCarrello = async (req, res) => {
+  const { id_utente } = req.body;
+
+  try {
+    await carrelloModel.clearCarrello(id_utente);
+    res.json({ message: 'Carrello svuotato con successo' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Errore durante lo svuotamento del carrello' });
   }
 };

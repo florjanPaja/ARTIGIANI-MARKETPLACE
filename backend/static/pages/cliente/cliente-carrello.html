@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carrello – Artigianato Online</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+  <!-- TOAST NOTIFICA -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+    <div id="toast-carrello" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="polite" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toast-messaggio"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-light bg-white shadow-sm mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <h4 class="navbar-brand mb-0">Il mio carrello</h4>
+        <span id="cart-count" class="badge rounded-pill bg-danger">0</span>
+      </div>
+      <button class="btn btn-outline-secondary" onclick="window.location.href='layout.html'">
+        <i class="bi bi-arrow-left"></i> Torna al catalogo
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTENUTO CARRELLO -->
+  <div class="container" id="carrello-container">
+    <div class="table-responsive mb-4">
+      <table class="table table-bordered align-middle bg-white" id="carrello-table">
+        <thead class="table-light">
+          <tr>
+            <th>Prodotto</th>
+            <th>Prezzo</th>
+            <th>Quantità</th>
+            <th>Totale</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center flex-wrap gap-3">
+        <h5 class="mb-0">Totale carrello: €<span id="totale-carrello">0.00</span></h5>
+        <span id="risparmio-carrello" class="text-success fw-semibold"></span>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-danger" id="svuota-carrello-btn">
+          <i class="bi bi-trash"></i> Svuota tutto
+        </button>
+        <button class="btn btn-success" disabled id="checkout-btn" data-bs-toggle="modal" data-bs-target="#checkoutModal">
+          Procedi al checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE CHECKOUT -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="pagamento-form" class="modal-content border-success">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">Pagamento con Carta</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="numero-carta" class="form-label">Numero Carta</label>
+            <input type="text" id="numero-carta" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="intestatario" class="form-label">Intestatario</label>
+            <input type="text" id="intestatario" class="form-control" required />
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="scadenza" class="form-label">Scadenza</label>
+              <input type="text" id="scadenza" class="form-control" placeholder="MM/AA" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="cvv" class="form-label">CVV</label>
+              <input type="text" id="cvv" class="form-control" required />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success w-100" type="submit">Conferma pagamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/cliente-carrello.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>

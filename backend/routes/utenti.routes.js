@@ -1,15 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const utentiController = require('../controllers/utenti.controller');
-const { verifyToken, onlyAdmin, isSelfOrAdmin } = require('../middlewares/auth.middleware');
+const controller = require('../controllers/utenti.controller');
+const auth = require('../middlewares/auth.middleware');
 
-// Rotta pubblica
-router.post('/register', utentiController.register);
+// 🔓 Pubblico: registrazione + profilo artigiano
+router.post('/register', controller.register);
+router.get('/artigiani/:id/pubblico', controller.getProfiloPubblico);
 
-// Rotte protette
-router.get('/', verifyToken, onlyAdmin, utentiController.list);
-router.get('/:id', verifyToken, isSelfOrAdmin, utentiController.getById);
-router.put('/:id', verifyToken, isSelfOrAdmin, utentiController.update);
-router.delete('/:id', verifyToken, isSelfOrAdmin, utentiController.remove);
+// 🔐 Protette: autenticazione obbligatoria
+router.use(auth.verifyToken);
+
+// 🔐 Solo admin: lista completa e statistiche
+router.get('/', auth.onlyAdmin, controller.list);
+router.get('/stats', auth.onlyAdmin, controller.stats);
+
+// 🔐 Visualizza/modifica/cancella un profilo (sé stesso o admin)
+router.get('/:id', auth.isSelfOrAdmin, controller.getById);
+router.put('/:id', auth.isSelfOrAdmin, controller.update);
+router.delete('/:id', auth.isSelfOrAdmin, controller.remove);
 
 module.exports = router;

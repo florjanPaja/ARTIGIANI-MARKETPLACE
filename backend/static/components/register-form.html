@@ -1,0 +1,103 @@
+<form id="register-form" novalidate>
+  <div class="mb-3">
+    <label for="nome" class="form-label">Nome</label>
+    <input type="text" class="form-control" id="nome" name="nome" required minlength="2" />
+  </div>
+  <div class="mb-3">
+    <label for="cognome" class="form-label">Cognome</label>
+    <input type="text" class="form-control" id="cognome" name="cognome" required minlength="2" />
+  </div>
+  <div class="mb-3">
+    <label for="email2" class="form-label">Email</label>
+    <input type="email" class="form-control" id="email2" name="email" required />
+  </div>
+  <div class="mb-3">
+    <label for="password2" class="form-label">Password</label>
+    <input type="password" class="form-control" id="password2" name="password" required minlength="6" />
+  </div>
+  <div class="mb-3">
+    <label for="role" class="form-label">Ruolo</label>
+    <select class="form-select" id="role" name="ruolo" required>
+      <option value="">Seleziona il tuo ruolo...</option>
+      <option value="cliente">Cliente</option>
+      <option value="artigiano">Artigiano</option>
+    </select>
+  </div>
+
+  <!-- Campi extra per artigiano -->
+  <div id="artigiano-fields" style="display: none;">
+    <div class="mb-3">
+      <label for="nome_attivita" class="form-label">Nome Attività</label>
+      <input type="text" class="form-control" id="nome_attivita" name="nome_attivita" />
+    </div>
+    <div class="mb-3">
+      <label for="partita_iva" class="form-label">Partita IVA</label>
+      <input type="text" class="form-control" id="partita_iva" name="partita_iva" />
+    </div>
+    <div class="mb-3">
+      <label for="bio" class="form-label">Descrizione / Bio (opzionale)</label>
+      <textarea class="form-control" id="bio" name="bio" rows="2"></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="sito_web" class="form-label">Sito Web (opzionale)</label>
+      <input type="url" class="form-control" id="sito_web" name="sito_web" />
+    </div>
+  </div>
+
+  <div id="register-error" class="text-danger mb-3" style="display:none;"></div>
+  <button type="submit" class="btn btn-primary w-100">Registrati</button>
+</form>
+
+<script>
+  function initRegisterForm() {
+    const $form = $('#register-form');
+    if (!$form.length) return;
+
+    // mostra/nasconde campi extra per artigiano
+    $('#role').on('change', function () {
+      const isArtigiano = $(this).val() === 'artigiano';
+      $('#artigiano-fields').toggle(isArtigiano);
+      $('#nome_attivita, #partita_iva').prop('required', isArtigiano);
+    });
+
+    $form.on('submit', function (e) {
+      e.preventDefault();
+      this.classList.add('was-validated');
+      if (!this.checkValidity()) return;
+
+      const ruolo = $('#role').val();
+      const payload = {
+        nome: $('#nome').val().trim(),
+        cognome: $('#cognome').val().trim(),
+        email: $('#email2').val().trim(),
+        password: $('#password2').val(),
+        ruolo
+      };
+
+      if (ruolo === 'artigiano') {
+        payload.nome_attivita = $('#nome_attivita').val().trim();
+        payload.partita_iva = $('#partita_iva').val().trim();
+        payload.bio = $('#bio').val().trim() || "";
+        payload.sito_web = $('#sito_web').val().trim() || "";
+      }
+
+      $.ajax({
+        url: '/api/utenti/register',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function (res) {
+          sessionStorage.setItem('authToken', res.token);
+          const ruolo = res.utente?.ruolo;
+          if (ruolo === 'cliente') location.href = '/pages/catalogo.html';
+          else if (ruolo === 'artigiano') location.href = '/pages/dashboard.html';
+          else if (ruolo === 'admin') location.href = '/pages/admin.html';
+          else location.href = '/';
+        },
+        error: function (xhr) {
+          $('#register-error').text(xhr.responseJSON?.message || 'Errore durante la registrazione').show();
+        }
+      });
+    });
+  }
+</script>

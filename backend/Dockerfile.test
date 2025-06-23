@@ -1,0 +1,19 @@
+# Usa la stessa base
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# Porta per test (se serve)
+EXPOSE 3001
+
+ENV PORT=3001
+ENV NODE_ENV=test
+
+# Comando per test
+CMD ["npm", "run", "test:db"]

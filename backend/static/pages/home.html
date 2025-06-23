@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artigianato Online – Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    .prezzo-originale {
+      text-decoration: line-through;
+      color: #999;
+      margin-right: 0.5rem;
+    }
+    .prezzo-scontato {
+      color: #c0392b;
+      font-weight: bold;
+    }
+    .badge-sconto {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-light bg-white shadow-sm mb-3" id="top-bar" style="display: none;">
+  <div class="container d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Artigianato Online</h4>
+    <div>
+      <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Registrati</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5">
+  <!-- CTA iniziale -->
+  <div id="cta-auth" class="text-center my-5">
+    <h2>Benvenuto su Artigianato Online</h2>
+    <p class="text-muted">Accedi o crea un account per iniziare</p>
+    <button class="btn btn-lg btn-success me-3" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+    <button class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Registrati</button>
+  </div>
+
+  <!-- Catalogo -->
+  <section id="catalogo-section" style="display: none;">
+    <div class="row" id="product-grid"></div>
+  </section>
+</div>
+
+<!-- MODALE DETTAGLI -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Dettagli Articolo</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <img id="modal-img" src="" class="img-fluid mb-3" alt="Immagine articolo">
+        <h4 id="modal-title"></h4>
+        <p id="modal-desc" class="text-muted"></p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>Prezzo:</strong> €<span id="modal-prezzo"></span></li>
+          <li class="list-group-item"><strong>Disponibilità:</strong> <span id="modal-disp"></span></li>
+          <li class="list-group-item"><strong>Categoria:</strong> <span id="modal-cat"></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGIN -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-success">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Login</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="login-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REGISTRAZIONE -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-primary">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Registrazione</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="register-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function mostraDettagli(p) {
+    $('#modal-title').text(p.nome);
+    $('#modal-desc').text(p.descrizione || '—');
+    $('#modal-prezzo').text(parseFloat(p.prezzo_scontato ?? p.prezzo).toFixed(2));
+    $('#modal-disp').text(p.disponibilita);
+    $('#modal-cat').text(p.categoria || '—');
+    const imgSrc = Array.isArray(p.immagini) && p.immagini.length > 0
+      ? p.immagini[0]
+      : 'https://via.placeholder.com/600x400?text=Nessuna+immagine';
+    $('#modal-img').attr('src', imgSrc);
+    new bootstrap.Modal('#productModal').show();
+  }
+
+  async function loadArticoli() {
+    try {
+      const res = await fetch('/api/articoli');
+      const articoli = await res.json();
+      const grid = $('#product-grid');
+      grid.empty();
+
+      if (!Array.isArray(articoli) || articoli.length === 0) {
+        $('#top-bar').hide();
+        $('#catalogo-section').hide();
+        $('#cta-auth').removeClass('d-none').show();
+        return;
+      }
+
+      $('#top-bar').show();
+      $('#catalogo-section').show();
+      $('#cta-auth').hide();
+
+      articoli.forEach(p => {
+        const prezzo = parseFloat(p.prezzo) || 0;
+        const sconto = parseFloat(p.sconto_percentuale) || 0;
+        const prezzoScontato = parseFloat(p.prezzo_scontato) || prezzo;
+        const haSconto = p.in_sconto === true && sconto > 0;
+
+        const imgSrc = Array.isArray(p.immagini) && p.immagini.length > 0
+          ? p.immagini[0]
+          : 'https://via.placeholder.com/300x200?text=Nessuna+immagine';
+
+        const prezzoHtml = haSconto
+          ? `<span class="prezzo-originale">€${prezzo.toFixed(2)}</span>
+             <span class="prezzo-scontato">€${prezzoScontato.toFixed(2)}</span>
+             <span class="badge badge-sconto ms-2">-${sconto}%</span>`
+          : `<span>€${prezzo.toFixed(2)}</span>`;
+
+        const html = `
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+              <img src="${imgSrc}" class="card-img-top" alt="${p.nome}" />
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">${p.nome}</h5>
+                <p class="card-text small">${p.descrizione || '—'}</p>
+                <div class="mb-2">${prezzoHtml}</div>
+                <button class="btn btn-outline-primary mt-auto btn-sm w-100 view-btn" data-id="${p.id}">
+                  <i class="bi bi-eye"></i> Dettagli
+                </button>
+              </div>
+            </div>
+          </div>`;
+        const $el = $(html).appendTo(grid);
+        $el.find('.view-btn').on('click', () => mostraDettagli(p));
+      });
+    } catch (err) {
+      console.error('Errore caricamento articoli:', err);
+      $('#top-bar').hide();
+      $('#catalogo-section').hide();
+      $('#cta-auth').removeClass('d-none').show();
+    }
+  }
+
+  $(document).ready(() => {
+    $('#login-container').load('/components/login-form.html', function () {
+      if (typeof initLoginForm === 'function') initLoginForm();
+    });
+
+    $('#register-container').load('/components/register-form.html', function () {
+      if (typeof initRegisterForm === 'function') initRegisterForm();
+    });
+
+    loadArticoli();
+  });
+</script>
+</body>
+</html>

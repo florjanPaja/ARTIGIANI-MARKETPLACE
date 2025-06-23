@@ -1,0 +1,53 @@
+<h1 class="h2 mb-4">Gestione Prodotti</h1>
+
+<div id="product-alert" class="alert alert-danger d-none"></div>
+
+<!-- Box Statistiche -->
+<div id="product-stats" class="row mb-4 d-none">
+  <div class="col">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Totale Prodotti</h5>
+        <p class="card-text" id="stat-totale">–</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-warning text-center">
+      <div class="card-body">
+        <h5 class="card-title">Esauriti</h5>
+        <p class="card-text" id="stat-esauriti">–</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-success text-center">
+      <div class="card-body">
+        <h5 class="card-title">In Sconto</h5>
+        <p class="card-text" id="stat-sconto">–</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabella Prodotti -->
+<div class="table-responsive">
+  <table id="products-table" class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Prezzo</th>
+        <th>Disponibilità</th>
+        <th>Categoria</th>
+        <th>Sconto</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="no-products" class="text-center text-muted d-none">
+        <td colspan="7">Nessun prodotto disponibile</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

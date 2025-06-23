@@ -1,0 +1,567 @@
+openapi: 3.0.3
+info:
+  title: API - Artigianato Online
+  description: Documentazione degli endpoint REST per il progetto E-Commerce "Artigianato Online".
+  version: 1.0.0
+servers:
+  - url: https://api.artigianato-online.it
+    description: Server di produzione
+  - url: http://localhost:3001
+    description: Server di sviluppo locale
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+
+paths:
+
+  /api/utenti:
+    get:
+      summary: Elenco utenti
+      tags: [Utenti]
+      responses:
+        '200':
+          description: Lista utenti
+
+  /api/utenti/{id}:
+    get:
+      summary: Recupera utente
+      tags: [Utenti]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli utente
+
+    put:
+      summary: Aggiorna utente
+      tags: [Utenti]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                telefono:
+                  type: string
+                indirizzo:
+                  type: string
+      responses:
+        '200':
+          description: Utente aggiornato
+
+    delete:
+      summary: Elimina utente
+      tags: [Utenti]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Utente eliminato
+
+  /api/spedizioni:
+    post:
+      summary: Crea spedizione
+      tags: [Spedizioni]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_ordine:
+                  type: string
+                id_utente:
+                  type: string
+                indirizzo_spedizione:
+                  type: string
+                citta:
+                  type: string
+                cap:
+                  type: string
+                stato:
+                  type: string
+                tracking_code:
+                  type: string
+      responses:
+        '200':
+          description: Spedizione creata
+
+  /api/spedizioni/{id_ordine}:
+    get:
+      summary: Dettagli spedizione
+      tags: [Spedizioni]
+      parameters:
+        - name: id_ordine
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dati spedizione
+
+    put:
+      summary: Aggiorna stato spedizione
+      tags: [Spedizioni]
+      parameters:
+        - name: id_ordine
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stato_spedizione:
+                  type: string
+      responses:
+        '200':
+          description: Stato aggiornato
+
+    delete:
+      summary: Elimina spedizione
+      tags: [Spedizioni]
+      parameters:
+        - name: id_ordine
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Spedizione eliminata
+
+  /api/carrello:
+    post:
+      summary: Aggiungi o aggiorna articolo nel carrello
+      tags: [Carrello]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_utente:
+                  type: string
+                id_articolo:
+                  type: string
+                prezzo_unitario:
+                  type: number
+                quantita:
+                  type: integer
+      responses:
+        '200':
+          description: Carrello aggiornato
+
+  /api/carrello/{id_utente}:
+    get:
+      summary: Ottiene contenuto del carrello
+      tags: [Carrello]
+      parameters:
+        - name: id_utente
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contenuto carrello
+
+
+  /api/articoli/{id}:
+    get:
+      summary: Dettaglio articolo
+      tags: [Articoli]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Articolo trovato
+
+    put:
+      summary: Aggiorna un articolo
+      tags: [Articoli]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                prezzo:
+                  type: number
+      responses:
+        '200':
+          description: Articolo aggiornato
+
+    delete:
+      summary: Elimina un articolo
+      tags: [Articoli]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Articolo eliminato
+
+  /api/ordini/{id}:
+    get:
+      summary: Recupera ordine
+      tags: [Ordini]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettaglio ordine
+
+    put:
+      summary: Aggiorna stato ordine
+      tags: [Ordini]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stato:
+                  type: string
+      responses:
+        '200':
+          description: Ordine aggiornato
+
+    delete:
+      summary: Elimina ordine
+      tags: [Ordini]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ordine eliminato
+
+  /api/pagamenti/{id_ordine}:
+    get:
+      summary: Dettagli pagamento
+      tags: [Pagamenti]
+      parameters:
+        - name: id_ordine
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pagamento trovato
+
+    put:
+      summary: Aggiorna stato pagamento
+      tags: [Pagamenti]
+      parameters:
+        - name: id_ordine
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stato_pagamento:
+                  type: string
+      responses:
+        '200':
+          description: Stato aggiornato
+
+    delete:
+      summary: Elimina pagamento
+      tags: [Pagamenti]
+      parameters:
+        - name: id_ordine
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pagamento eliminato
+
+  /api/segnalazioni/{id}/messaggi:
+    get:
+      summary: Recupera messaggi segnalazione
+      tags: [Segnalazioni]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista messaggi
+
+    post:
+      summary: Aggiungi messaggio a segnalazione
+      tags: [Segnalazioni]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mittente:
+                  type: string
+                messaggio:
+                  type: string
+      responses:
+        '200':
+          description: Messaggio aggiunto
+
+
+  /api/auth/login:
+    post:
+      summary: Login utente
+      tags: [Autenticazione]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Token JWT e profilo utente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  utente:
+                    $ref: '#/components/schemas/Utente'
+
+  /api/articoli:
+    get:
+      summary: Ottiene tutti gli articoli
+      tags: [Articoli]
+      responses:
+        '200':
+          description: Lista articoli
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Articolo'
+
+  /api/ordini:
+    post:
+      summary: Crea un nuovo ordine
+      tags: [Ordini]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                righe:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id_articolo:
+                        type: string
+                        format: uuid
+                      prezzo_unitario:
+                        type: number
+                      quantita:
+                        type: integer
+      responses:
+        '200':
+          description: Ordine creato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  ordineId:
+                    type: string
+                    format: uuid
+
+  /api/carrello:
+    post:
+      summary: Aggiunge o aggiorna un articolo nel carrello
+      tags: [Carrello]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_utente:
+                  type: string
+                id_articolo:
+                  type: string
+                prezzo_unitario:
+                  type: number
+                quantita:
+                  type: integer
+      responses:
+        '200':
+          description: Articolo inserito o aggiornato
+
+  /api/pagamenti:
+    post:
+      summary: Registra un pagamento
+      tags: [Pagamenti]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PagamentoInput'
+      responses:
+        '200':
+          description: Pagamento registrato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pagamento'
+
+  /api/segnalazioni:
+    post:
+      summary: Crea una segnalazione
+      tags: [Segnalazioni]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oggetto, messaggio]
+              properties:
+                oggetto:
+                  type: string
+                messaggio:
+                  type: string
+      responses:
+        '200':
+          description: Segnalazione creata
+
+
+components:
+  schemas:
+    Articolo:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        prezzo:
+          type: number
+
+    Utente:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+        ruolo:
+          type: string
+
+    PagamentoInput:
+      type: object
+      properties:
+        id_ordine:
+          type: string
+        importo:
+          type: number
+        metodo_pagamento:
+          type: string
+
+    Pagamento:
+      allOf:
+        - $ref: '#/components/schemas/PagamentoInput'
+        - type: object
+          properties:
+            stato_pagamento:
+              type: string

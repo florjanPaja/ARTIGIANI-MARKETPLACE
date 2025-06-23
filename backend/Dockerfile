@@ -14,10 +14,10 @@ RUN npm install
 COPY . .
 
 # Espone la porta configurata (di default 3000)
-EXPOSE 3000
+EXPOSE 5000
 
 # Variabile di ambiente di default (può essere sovrascritta con docker-compose)
-ENV PORT=3000
+ENV PORT=5000
 
 # Comando di avvio
-CMD [ "npm", "start" ]
+CMD [ "npm","run", "dev" ]

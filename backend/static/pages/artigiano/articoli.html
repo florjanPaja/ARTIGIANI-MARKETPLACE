@@ -1,0 +1,164 @@
+<div class="container py-4">
+    <h1 class="h2 mb-4 d-flex justify-content-between align-items-center">
+      Gestione Articoli
+      <button class="btn btn-primary btn-sm" id="btn-nuovo-articolo" data-bs-toggle="modal" data-bs-target="#editArticoloModal">
+        <i class="bi bi-plus-lg me-1"></i> Aggiungi articolo
+      </button>
+    </h1>
+  
+    <div id="articoli-vuoti" class="alert alert-info d-none">
+      Non hai ancora inserito nessun articolo. Clicca su <strong>"Aggiungi articolo"</strong> per iniziare.
+    </div>
+  
+    <div id="articoli-alert" class="alert alert-danger d-none"></div>
+    <div id="articoli-stats" class="row mb-4 d-none">
+        <div class="col">
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="card-title">Totale Articoli</h5>
+              <p class="card-text" id="stat-totale">–</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-warning text-center">
+            <div class="card-body">
+              <h5 class="card-title">Esauriti</h5>
+              <p class="card-text" id="stat-esauriti">–</p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-success text-center">
+            <div class="card-body">
+              <h5 class="card-title">In Sconto</h5>
+              <p class="card-text" id="stat-sconto">–</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <div class="table-responsive d-none" id="articoli-tabella-container">
+      <table id="articoli-table" class="table table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nome</th>
+            <th>Prezzo</th>
+            <th>Sconto</th>
+            <th>Prezzo Scontato</th>
+            <th>Disponibilità</th>
+            <th>Categoria</th>
+            <th>In Sconto</th>
+            <th>Data Inizio</th>
+            <th>Data Fine</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Modale Dettagli -->
+  <div class="modal fade" id="articoloDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Dettagli Articolo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Nome:</strong> <span id="detail-nome"></span></li>
+            <li class="list-group-item"><strong>Descrizione:</strong> <span id="detail-descrizione"></span></li>
+            <li class="list-group-item"><strong>Prezzo:</strong> €<span id="detail-prezzo"></span></li>
+            <li class="list-group-item"><strong>Sconto:</strong> <span id="detail-sconto"></span>%</li>
+            <li class="list-group-item"><strong>Prezzo Scontato:</strong> €<span id="detail-prezzo-scontato"></span></li>
+            <li class="list-group-item"><strong>Disponibilità:</strong> <span id="detail-disponibilita"></span></li>
+            <li class="list-group-item"><strong>Categoria:</strong> <span id="detail-categoria"></span></li>
+            <li class="list-group-item"><strong>In Sconto:</strong> <span id="detail-in-sconto"></span></li>
+            <li class="list-group-item"><strong>Periodo Sconto:</strong> <span id="detail-periodo-sconto"></span></li>
+            <li class="list-group-item">
+              <strong>Immagine:</strong><br>
+              <img id="detail-immagine" class="img-fluid mt-2" />
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modale Modifica/Aggiungi -->
+  <div class="modal fade" id="editArticoloModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="edit-articolo-form">
+          <div class="modal-header bg-warning text-dark">
+            <h5 class="modal-title">Aggiungi / Modifica Articolo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-index" />
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nome <span class="text-danger">*</span></label>
+                <input type="text" id="edit-nome" class="form-control" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Prezzo € <span class="text-danger">*</span></label>
+                <input type="number" id="edit-prezzo" class="form-control" step="0.01" min="0" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Disponibilità <span class="text-danger">*</span></label>
+                <input type="number" id="edit-disponibilita" class="form-control" min="0" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Categoria</label>
+                <input type="text" id="edit-categoria" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Descrizione</label>
+                <textarea id="edit-descrizione" class="form-control" rows="3"></textarea>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Sconto (%)</label>
+                <input type="number" id="edit-sconto-percentuale" class="form-control" step="0.01" min="0" max="100" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">In sconto</label>
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" id="edit-in-sconto" />
+                  <label class="form-check-label" for="edit-in-sconto">Attivo</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Data inizio sconto</label>
+                <input type="date" id="edit-data-inizio-sconto" class="form-control" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Data fine sconto</label>
+                <input type="date" id="edit-data-fine-sconto" class="form-control" />
+              </div>
+              <div class="col-12">
+                <label class="form-label">Immagini esistenti</label>
+                <div id="edit-immagini-esistenti" class="d-flex flex-wrap gap-2"></div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Nuove immagini</label>
+                <input type="file" id="edit-immagini" class="form-control" multiple accept="image/*" />
+                <div id="edit-preview-immagini" class="mt-3 d-flex flex-wrap gap-2"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-warning">Salva Modifiche</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  

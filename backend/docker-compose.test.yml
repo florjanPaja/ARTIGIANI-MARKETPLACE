@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    restart: unless-stopped
+    environment:
+      NODE_ENV: test
+      DB_HOST: db          # il nome del servizio db
+      DB_PORT: 5432        # porta interna di Postgres
+      DB_USER: testuser
+      DB_PASSWORD: testpass
+      DB_NAME: testdb
+      JWT_SECRET: testsecret
+    ports:
+      - '3001:3001'
+    depends_on:
+      - db
+    command: sh -c "npm install && npm run test:db"

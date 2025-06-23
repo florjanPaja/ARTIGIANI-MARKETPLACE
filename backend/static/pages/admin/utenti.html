@@ -1,0 +1,52 @@
+<h1 class="h2 mb-4">Gestione Utenti</h1>
+
+<div id="admin-alert" class="alert alert-danger d-none"></div>
+
+<div class="table-responsive">
+  <table id="users-table" class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Nome</th>
+        <th>Ruolo</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Modale Dettagli Utente -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userDetailsLabel">Dettagli Utente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item"><strong>ID:</strong> <span id="detail-id"></span></li>
+          <li class="list-group-item"><strong>Email:</strong> <span id="detail-email"></span></li>
+          <li class="list-group-item"><strong>Nome:</strong> <span id="detail-nome"></span></li>
+          <li class="list-group-item"><strong>Ruolo:</strong> <span id="detail-ruolo"></span></li>
+          <li class="list-group-item"><strong>Telefono:</strong> <span id="detail-telefono"></span></li>
+          <li class="list-group-item"><strong>Indirizzo:</strong> <span id="detail-indirizzo"></span></li>
+          <li class="list-group-item"><strong>Città:</strong> <span id="detail-citta"></span></li>
+          <li class="list-group-item"><strong>Stato:</strong> <span id="detail-stato"></span></li>
+
+          <!-- Sezione aggiuntiva solo per artigiani -->
+          <div id="artigiano-extra" class="d-none">
+            <li class="list-group-item"><strong>Partita IVA:</strong> <span id="detail-piva"></span></li>
+            <li class="list-group-item"><strong>Bio:</strong> <span id="detail-bio"></span></li>
+            <li class="list-group-item"><strong>Sito web:</strong> <span id="detail-sito"></span></li>
+          </div>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>

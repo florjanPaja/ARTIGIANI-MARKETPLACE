@@ -1,0 +1,56 @@
+<form id="login-form" novalidate>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" class="form-control" id="email" name="email" required>
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" id="password" name="password" required minlength="6">
+  </div>
+  <div id="login-error" class="text-danger mb-2" style="display:none;"></div>
+  <button type="submit" class="btn btn-primary w-100">Accedi</button>
+</form>
+
+<script>
+  function initLoginForm() {
+    const $form = $('#login-form');
+    if (!$form.length) return;
+
+    $form.on('submit', function (e) {
+      e.preventDefault();
+      this.classList.add('was-validated');
+      if (!this.checkValidity()) return;
+
+      const payload = {
+        email: $('#email').val().trim(),
+        password: $('#password').val()
+      };
+
+      $.ajax({
+        url: '/api/auth/login',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function (res) {
+          // ✅ Salva info utente
+          sessionStorage.setItem('authToken', res.token);
+          sessionStorage.setItem('userId', res.utente?.id);
+          sessionStorage.setItem('userRole', res.utente?.ruolo);
+          sessionStorage.setItem("utente", JSON.stringify(res.utente || {}));
+
+
+
+          // 🔁 Redirect basato sul ruolo
+          const ruolo = res.utente?.ruolo;
+          if (ruolo === 'cliente') location.href = '/pages/cliente/layout.html';
+          else if (ruolo === 'artigiano') location.href = '/pages/artigiano/layout.html';
+          else if (ruolo === 'admin') location.href = '/pages/admin/layout.html';
+          else location.href = '/pages/home.html';
+        },
+        error: function (xhr) {
+          $('#login-error').text(xhr.responseJSON?.message || 'Credenziali non valide').show();
+        }
+      });
+    });
+  }
+</script>

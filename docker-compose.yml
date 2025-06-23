@@ -22,17 +22,9 @@ services:
       - db
     env_file:
       - .env
-    networks:
-      - marketplace-net
-    restart: unless-stopped
-
-  frontend:
-    build: ./frontend
-    container_name: marketplace-frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
+    volumes:  
+      - ./backend:/app  # utile in sviluppo per hot reload
+      - /app/node_modules
     networks:
       - marketplace-net
     restart: unless-stopped

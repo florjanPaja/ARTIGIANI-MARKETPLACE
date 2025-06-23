@@ -1,0 +1,68 @@
+<h2 class="mb-4">Profilo Artigiano</h2>
+<form id="profilo-form">
+  <div class="mb-3">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-control" name="nome" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Cognome</label>
+    <input type="text" class="form-control" name="cognome" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Email</label>
+    <input type="email" class="form-control" name="email" disabled />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Telefono</label>
+    <input type="text" class="form-control" name="telefono" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Indirizzo</label>
+    <input type="text" class="form-control" name="indirizzo" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Città</label>
+    <input type="text" class="form-control" name="citta" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">CAP</label>
+    <input type="text" class="form-control" name="cap" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Stato</label>
+    <input type="text" class="form-control" name="stato" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Nome attività</label>
+    <input type="text" class="form-control" name="nome_attivita" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Partita IVA</label>
+    <input type="text" class="form-control" name="partita_iva" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Sito web</label>
+    <input type="url" class="form-control" name="sito_web" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Biografia</label>
+    <textarea class="form-control" name="bio"></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Salva modifiche</button>
+</form>
+
+<hr class="my-4" />
+
+<h4>Anteprima Vetrina Pubblica</h4>
+<div id="anteprima-vetrina" class="mb-3 border p-3 rounded bg-light">
+  <p><strong>Nome Attività:</strong> <span id="vetrina-attivita">-</span></p>
+  <p><strong>Biografia:</strong> <span id="vetrina-bio">-</span></p>
+  <p><strong>Località:</strong> <span id="vetrina-localita">-</span></p>
+  <p><strong>Sito Web:</strong> <a href="#" id="vetrina-sito" target="_blank">-</a></p>
+</div>
+
+<button id="elimina-profilo" class="btn btn-outline-danger">Elimina Profilo</button>
+
+
+
